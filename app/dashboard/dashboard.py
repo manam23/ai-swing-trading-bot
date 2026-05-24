@@ -390,6 +390,10 @@ fig.add_trace(
 # SUPPORT LINE
 # =========================
 
+# =========================
+# SUPPORT LINE
+# =========================
+
 fig.add_hline(
 
     y=support,
@@ -517,6 +521,10 @@ fig.add_trace(
 # ENTRY PRICE LINE
 # =========================
 
+# =========================
+# ENTRY PRICE LINE
+# =========================
+
 fig.add_hline(
 
     y=latest_close,
@@ -529,7 +537,7 @@ fig.add_hline(
         f"{signal} ENTRY ₹{round(latest_close,2)}"
     ),
 
-    annotation_position="left"
+    annotation_position="top left"
 )
 
 
