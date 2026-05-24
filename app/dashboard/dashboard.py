@@ -10,18 +10,6 @@ sys.path.append(
     )
 )
 
-import sys
-import os
-
-sys.path.append(
-    os.path.abspath(
-        os.path.join(
-            os.path.dirname(__file__),
-            "../.."
-        )
-    )
-)
-
 import streamlit as st
 import sqlite3
 import pandas as pd
