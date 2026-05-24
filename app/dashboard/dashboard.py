@@ -290,6 +290,14 @@ chart_data = fetch_stock_data(
     selected_stock
 )
 
+if chart_data is None or chart_data.empty:
+
+    st.error(
+        f"No market data found for {selected_stock}"
+    )
+
+    st.stop()
+
 chart_data = calculate_ema(
     chart_data
 )
