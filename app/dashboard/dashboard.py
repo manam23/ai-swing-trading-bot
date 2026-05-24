@@ -252,8 +252,11 @@ st.divider()
 # STOCK CHART
 # =========================
 
-st.subheader("📈 Professional Trading Chart")
+# =========================
+# STOCK CHART
+# =========================
 
+st.subheader("📈 Professional Trading Chart")
 
 st.subheader("🔍 Search Any NSE Stock")
 
@@ -282,19 +285,26 @@ else:
         stock_list
     )
 
-    chart_data = fetch_stock_data(
-        selected_stock
-    )
 
-    chart_data = calculate_ema(
-        chart_data
-    )
+chart_data = fetch_stock_data(
+    selected_stock
+)
 
-    fig = go.Figure()
+chart_data = calculate_ema(
+    chart_data
+)
 
-    latest_trade = filtered_df[
-        filtered_df["stock"] == selected_stock
-    ].iloc[0]
+fig = go.Figure()
+
+
+stock_rows = filtered_df[
+    filtered_df["stock"] == selected_stock
+]
+
+
+if len(stock_rows) > 0:
+
+    latest_trade = stock_rows.iloc[0]
 
     support = float(latest_trade["support"])
 
@@ -306,144 +316,172 @@ else:
 
     pnl = latest_trade["pnl"]
 
-    fig.add_trace(
-
-        go.Candlestick(
-
-            x=chart_data.index,
-
-            open=chart_data["Open"],
-
-            high=chart_data["High"],
-
-            low=chart_data["Low"],
-
-            close=chart_data["Close"],
-
-            name="Candlestick"
-        )
-    )
-
-    fig.add_trace(
-
-        go.Scatter(
-
-            x=chart_data.index,
-
-            y=chart_data["EMA_20"],
-
-            mode="lines",
-
-            name="EMA 20"
-        )
-    )
-
-    fig.add_trace(
-
-        go.Scatter(
-
-            x=chart_data.index,
-
-            y=chart_data["EMA_50"],
-
-            mode="lines",
-
-            name="EMA 50"
-        )
-    )
-
-    fig.add_hline(
-        y=support,
-        line_dash="dot",
-        annotation_text="Support"
-    )
-
-    fig.add_hline(
-        y=resistance,
-        line_dash="dot",
-        annotation_text="Resistance"
-    )
-
-    latest_close = chart_data["Close"].iloc[-1]
-
-    latest_date = chart_data.index[-1]
-
-    signal_color = (
-
-        "lime"
-
-        if signal == "BUY"
-
-        else "red"
-    )
-
-    signal_symbol = (
-
-        "triangle-up"
-
-        if signal == "BUY"
-
-        else "triangle-down"
-    )
-
-    fig.add_trace(
-
-        go.Scatter(
-
-            x=[latest_date],
-
-            y=[latest_close],
-
-            mode="markers+text",
-
-            marker=dict(
-
-                size=26,
-
-                color=signal_color,
-
-                symbol=signal_symbol,
-
-                line=dict(
-                    width=2,
-                    color="white"
-                )
-            ),
-
-            text=[signal],
-
-            textposition="top center",
-
-            name=f"{signal} Signal"
-        )
-    )
-
-    fig.update_layout(
-
-        title=(
-            f"{selected_stock} | "
-            f"Status: {trade_status} | "
-            f"PnL: ₹{pnl}"
-        ),
-
-        height=750,
-
-        xaxis_title="Date",
-
-        yaxis_title="Price",
-
-        template="plotly_dark",
-
-        xaxis_rangeslider_visible=False
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
 else:
 
-    st.warning(
-        "No trade signals available for chart display."
+    support = float(chart_data["Low"].tail(20).min())
+
+    resistance = float(chart_data["High"].tail(20).max())
+
+    signal = "BUY"
+
+    trade_status = "LIVE"
+
+    pnl = 0
+
+
+fig.add_trace(
+
+    go.Candlestick(
+
+        x=chart_data.index,
+
+        open=chart_data["Open"],
+
+        high=chart_data["High"],
+
+        low=chart_data["Low"],
+
+        close=chart_data["Close"],
+
+        name="Candlestick"
     )
+)
+
+
+fig.add_trace(
+
+    go.Scatter(
+
+        x=chart_data.index,
+
+        y=chart_data["EMA_20"],
+
+        mode="lines",
+
+        name="EMA 20"
+    )
+)
+
+
+fig.add_trace(
+
+    go.Scatter(
+
+        x=chart_data.index,
+
+        y=chart_data["EMA_50"],
+
+        mode="lines",
+
+        name="EMA 50"
+    )
+)
+
+
+fig.add_hline(
+
+    y=support,
+
+    line_dash="dot",
+
+    annotation_text="Support"
+)
+
+
+fig.add_hline(
+
+    y=resistance,
+
+    line_dash="dot",
+
+    annotation_text="Resistance"
+)
+
+
+latest_close = chart_data["Close"].iloc[-1]
+
+latest_date = chart_data.index[-1]
+
+
+signal_color = (
+
+    "lime"
+
+    if signal == "BUY"
+
+    else "red"
+)
+
+
+signal_symbol = (
+
+    "triangle-up"
+
+    if signal == "BUY"
+
+    else "triangle-down"
+)
+
+
+fig.add_trace(
+
+    go.Scatter(
+
+        x=[latest_date],
+
+        y=[latest_close],
+
+        mode="markers+text",
+
+        marker=dict(
+
+            size=26,
+
+            color=signal_color,
+
+            symbol=signal_symbol,
+
+            line=dict(
+                width=2,
+                color="white"
+            )
+        ),
+
+        text=[signal],
+
+        textposition="top center",
+
+        name=f"{signal} Signal"
+    )
+)
+
+
+fig.update_layout(
+
+    title=(
+
+        f"{selected_stock} | "
+
+        f"Status: {trade_status} | "
+
+        f"PnL: ₹{pnl}"
+    ),
+
+    height=750,
+
+    xaxis_title="Date",
+
+    yaxis_title="Price",
+
+    template="plotly_dark",
+
+    xaxis_rangeslider_visible=False
+)
+
+
+st.plotly_chart(
+
+    fig,
+
+    use_container_width=True
+)
