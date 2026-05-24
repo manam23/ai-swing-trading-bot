@@ -406,14 +406,6 @@ fig.add_shape(
         dash="dot"
     )
 )
-
-fig.add_annotation(
-    x=chart_data.index[-1],
-    y=support,
-    text=f"🟢 SUPPORT ₹{round(support,2)}",
-    showarrow=False,
-    font=dict(color="lime", size=14)
-)
 # =========================
 # RESISTANCE LINE
 # =========================
@@ -447,8 +439,48 @@ fig.add_annotation(
 latest_close = chart_data["Close"].iloc[-1]
 
 latest_date = chart_data.index[-1]
+# =========================
+# SIGNAL COLORS
+# =========================
 
+signal_color = (
 
+    "lime"
+
+    if signal == "BUY"
+
+    else "red"
+)
+
+signal_symbol = (
+
+    "triangle-up"
+
+    if signal == "BUY"
+
+    else "triangle-down"
+)
+
+# =========================
+# BUY SELL LABEL
+# =========================
+
+fig.add_annotation(
+    x=latest_date,
+    y=latest_close,
+    text=f"🟢 BUY" if signal == "BUY" else "🔴 SELL",
+    showarrow=True,
+    arrowhead=2,
+    arrowsize=1,
+    arrowwidth=2,
+    arrowcolor=signal_color,
+    ax=40,
+    ay=-40,
+    font=dict(
+        color=signal_color,
+        size=16
+    )
+)
 # =========================
 # SIGNAL COLORS
 # =========================
