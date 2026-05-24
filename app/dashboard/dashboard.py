@@ -1,3 +1,15 @@
+import sys
+import os
+
+sys.path.append(
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            "../.."
+        )
+    )
+)
+
 import streamlit as st
 import sqlite3
 import pandas as pd
@@ -52,6 +64,10 @@ st.title("🚀 AI Swing Trading Dashboard")
 
 def load_trade_history():
 
+    if not os.path.exists(DB_NAME):
+
+        return pd.DataFrame()
+
     conn = sqlite3.connect(DB_NAME)
 
     query = """
@@ -60,7 +76,13 @@ def load_trade_history():
     ORDER BY timestamp DESC
     """
 
-    df = pd.read_sql_query(query, conn)
+    try:
+
+        df = pd.read_sql_query(query, conn)
+
+    except:
+
+        df = pd.DataFrame()
 
     conn.close()
 
@@ -68,6 +90,20 @@ def load_trade_history():
 
 
 df = load_trade_history()
+
+
+# =========================
+# EMPTY DATABASE CHECK
+# =========================
+
+if df.empty:
+
+    st.warning(
+        "No trade data available yet."
+    )
+
+    st.stop()
+
 
 performance = get_trade_performance()
 
@@ -239,10 +275,6 @@ if len(stock_list) > 0:
     fig = go.Figure()
 
 
-    # =========================
-    # GET LATEST TRADE DATA
-    # =========================
-
     latest_trade = filtered_df[
         filtered_df["stock"] == selected_stock
     ].iloc[0]
@@ -257,10 +289,6 @@ if len(stock_list) > 0:
 
     pnl = latest_trade["pnl"]
 
-
-    # =========================
-    # CANDLESTICK CHART
-    # =========================
 
     fig.add_trace(
 
@@ -281,10 +309,6 @@ if len(stock_list) > 0:
     )
 
 
-    # =========================
-    # EMA 20
-    # =========================
-
     fig.add_trace(
 
         go.Scatter(
@@ -299,10 +323,6 @@ if len(stock_list) > 0:
         )
     )
 
-
-    # =========================
-    # EMA 50
-    # =========================
 
     fig.add_trace(
 
@@ -319,10 +339,6 @@ if len(stock_list) > 0:
     )
 
 
-    # =========================
-    # SUPPORT LINE
-    # =========================
-
     fig.add_hline(
 
         y=support,
@@ -333,10 +349,6 @@ if len(stock_list) > 0:
     )
 
 
-    # =========================
-    # RESISTANCE LINE
-    # =========================
-
     fig.add_hline(
 
         y=resistance,
@@ -346,10 +358,6 @@ if len(stock_list) > 0:
         annotation_text="Resistance"
     )
 
-
-    # =========================
-    # BUY / SELL MARKER
-    # =========================
 
     latest_close = chart_data["Close"].iloc[-1]
 
