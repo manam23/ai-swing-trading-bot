@@ -386,15 +386,29 @@ fig.add_trace(
 )
 
 
+# =========================
+# SUPPORT LINE
+# =========================
+
 fig.add_hline(
 
     y=support,
 
     line_dash="dot",
 
-    annotation_text="Support"
+    line_color="lime",
+
+    annotation_text=(
+        f"🟢 SUPPORT ₹{round(support,2)}"
+    ),
+
+    annotation_position="bottom right"
 )
 
+
+# =========================
+# RESISTANCE LINE
+# =========================
 
 fig.add_hline(
 
@@ -402,14 +416,28 @@ fig.add_hline(
 
     line_dash="dot",
 
-    annotation_text="Resistance"
+    line_color="red",
+
+    annotation_text=(
+        f"🔴 RESISTANCE ₹{round(resistance,2)}"
+    ),
+
+    annotation_position="top right"
 )
 
+
+# =========================
+# LATEST PRICE
+# =========================
 
 latest_close = chart_data["Close"].iloc[-1]
 
 latest_date = chart_data.index[-1]
 
+
+# =========================
+# SIGNAL COLORS
+# =========================
 
 signal_color = (
 
@@ -431,6 +459,23 @@ signal_symbol = (
 )
 
 
+# =========================
+# ENTRY LABEL
+# =========================
+
+entry_label = (
+
+    f"{signal}<br>"
+    f"Entry: ₹{round(latest_close,2)}<br>"
+    f"Support: ₹{round(support,2)}<br>"
+    f"Resistance: ₹{round(resistance,2)}"
+)
+
+
+# =========================
+# BUY / SELL MARKER
+# =========================
+
 fig.add_trace(
 
     go.Scatter(
@@ -443,24 +488,48 @@ fig.add_trace(
 
         marker=dict(
 
-            size=26,
+            size=36,
 
             color=signal_color,
 
             symbol=signal_symbol,
 
             line=dict(
-                width=2,
+                width=3,
                 color="white"
             )
         ),
 
-        text=[signal],
+        text=[entry_label],
 
         textposition="top center",
 
+        textfont=dict(
+            size=14
+        ),
+
         name=f"{signal} Signal"
     )
+)
+
+
+# =========================
+# ENTRY PRICE LINE
+# =========================
+
+fig.add_hline(
+
+    y=latest_close,
+
+    line_dash="dash",
+
+    line_color=signal_color,
+
+    annotation_text=(
+        f"{signal} ENTRY ₹{round(latest_close,2)}"
+    ),
+
+    annotation_position="left"
 )
 
 
@@ -475,7 +544,7 @@ fig.update_layout(
         f"PnL: ₹{pnl}"
     ),
 
-    height=750,
+    height=900,
 
     xaxis_title="Date",
 
