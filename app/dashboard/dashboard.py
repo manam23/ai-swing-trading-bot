@@ -395,34 +395,35 @@ fig.add_trace(
 # =========================
 
 fig.add_hline(
-
     y=support,
-
     line_dash="dot",
-
-    line_color="lime",
-
-    annotation_text=(
-        f"🟢 SUPPORT ₹{round(support,2)}"
-    ),
+    line_color="lime"
 )
 
+fig.add_annotation(
+    x=chart_data.index[-1],
+    y=support,
+    text=f"🟢 SUPPORT ₹{round(support,2)}",
+    showarrow=False,
+    font=dict(color="lime", size=14)
+)
 
 # =========================
 # RESISTANCE LINE
 # =========================
 
 fig.add_hline(
-
     y=resistance,
-
     line_dash="dot",
+    line_color="red"
+)
 
-    line_color="red",
-
-    annotation_text=(
-        f"🔴 RESISTANCE ₹{round(resistance,2)}"
-    ),
+fig.add_annotation(
+    x=chart_data.index[-1],
+    y=resistance,
+    text=f"🔴 RESISTANCE ₹{round(resistance,2)}",
+    showarrow=False,
+    font=dict(color="red", size=14)
 )
 
 
@@ -522,18 +523,18 @@ fig.add_trace(
 # =========================
 
 fig.add_hline(
-
     y=latest_close,
-
     line_dash="dash",
-
-    line_color=signal_color,
-
-    annotation_text=(
-        f"{signal} ENTRY ₹{round(latest_close,2)}"
-    ),
+    line_color=signal_color
 )
 
+fig.add_annotation(
+    x=chart_data.index[-1],
+    y=latest_close,
+    text=f"{signal} ENTRY ₹{round(latest_close,2)}",
+    showarrow=False,
+    font=dict(color=signal_color, size=14)
+)
 
 fig.update_layout(
 
