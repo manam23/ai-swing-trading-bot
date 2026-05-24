@@ -36,9 +36,28 @@ st.set_page_config(
 # AUTO REFRESH
 # =========================
 
+# =========================
+# LIVE AUTO REFRESH
+# =========================
+
+st.subheader("🔄 Live Market Dashboard")
+
+refresh_interval = st.slider(
+
+    "Auto Refresh Interval (Seconds)",
+
+    min_value=5,
+
+    max_value=60,
+
+    value=15
+)
+
 st_autorefresh(
-    interval=15 * 1000,
-    key="dashboard_refresh"
+
+    interval=refresh_interval * 1000,
+
+    key="live_dashboard_refresh"
 )
 
 
@@ -236,13 +255,30 @@ st.divider()
 st.subheader("📈 Professional Trading Chart")
 
 
+st.subheader("🔍 Search Any NSE Stock")
+
+custom_stock = st.text_input(
+
+    "Enter NSE Stock Symbol",
+
+    placeholder="Example: IDEA, IRCTC, ZOMATO"
+)
+
 stock_list = filtered_df["stock"].unique()
 
 
-if len(stock_list) > 0:
+if custom_stock:
+
+    selected_stock = (
+        f"{custom_stock.upper()}.NS"
+    )
+
+else:
 
     selected_stock = st.selectbox(
+
         "Select Stock",
+
         stock_list
     )
 
@@ -332,9 +368,21 @@ if len(stock_list) > 0:
 
     latest_date = chart_data.index[-1]
 
-    marker_symbol = (
-        "triangle-up"
+        signal_color = (
+
+        "lime"
+
         if signal == "BUY"
+
+        else "red"
+    )
+
+    signal_symbol = (
+
+        "triangle-up"
+
+        if signal == "BUY"
+
         else "triangle-down"
     )
 
@@ -346,12 +394,25 @@ if len(stock_list) > 0:
 
             y=[latest_close],
 
-            mode="markers",
+            mode="markers+text",
 
             marker=dict(
-                size=16,
-                symbol=marker_symbol
+
+                size=26,
+
+                color=signal_color,
+
+                symbol=signal_symbol,
+
+                line=dict(
+                    width=2,
+                    color="white"
+                )
             ),
+
+            text=[signal],
+
+            textposition="top center",
 
             name=f"{signal} Signal"
         )
