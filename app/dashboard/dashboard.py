@@ -405,8 +405,6 @@ fig.add_hline(
     annotation_text=(
         f"🟢 SUPPORT ₹{round(support,2)}"
     ),
-
-    annotation_position="bottom right"
 )
 
 
@@ -425,8 +423,6 @@ fig.add_hline(
     annotation_text=(
         f"🔴 RESISTANCE ₹{round(resistance,2)}"
     ),
-
-    annotation_position="top right"
 )
 
 
@@ -536,8 +532,6 @@ fig.add_hline(
     annotation_text=(
         f"{signal} ENTRY ₹{round(latest_close,2)}"
     ),
-
-    annotation_position="top left"
 )
 
 
