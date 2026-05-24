@@ -394,10 +394,17 @@ fig.add_trace(
 # SUPPORT LINE
 # =========================
 
-fig.add_hline(
-    y=support,
-    line_dash="dot",
-    line_color="lime"
+fig.add_shape(
+    type="line",
+    x0=chart_data.index[0],
+    x1=chart_data.index[-1],
+    y0=support,
+    y1=support,
+    line=dict(
+        color="lime",
+        width=2,
+        dash="dot"
+    )
 )
 
 fig.add_annotation(
@@ -407,15 +414,21 @@ fig.add_annotation(
     showarrow=False,
     font=dict(color="lime", size=14)
 )
-
 # =========================
 # RESISTANCE LINE
 # =========================
 
-fig.add_hline(
-    y=resistance,
-    line_dash="dot",
-    line_color="red"
+fig.add_shape(
+    type="line",
+    x0=chart_data.index[0],
+    x1=chart_data.index[-1],
+    y0=resistance,
+    y1=resistance,
+    line=dict(
+        color="red",
+        width=2,
+        dash="dot"
+    )
 )
 
 fig.add_annotation(
@@ -522,10 +535,17 @@ fig.add_trace(
 # ENTRY PRICE LINE
 # =========================
 
-fig.add_hline(
-    y=latest_close,
-    line_dash="dash",
-    line_color=signal_color
+fig.add_shape(
+    type="line",
+    x0=chart_data.index[0],
+    x1=chart_data.index[-1],
+    y0=latest_close,
+    y1=latest_close,
+    line=dict(
+        color=signal_color,
+        width=2,
+        dash="dash"
+    )
 )
 
 fig.add_annotation(
