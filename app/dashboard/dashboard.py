@@ -440,13 +440,6 @@ latest_close = chart_data["Close"].iloc[-1]
 
 latest_date = chart_data.index[-1]
 
-# =========================
-# BUY SELL LABEL
-# =========================
-
-latest_close = chart_data["Close"].iloc[-1]
-
-latest_date = chart_data.index[-1]
 
 # =========================
 # SIGNAL COLORS
@@ -469,6 +462,7 @@ signal_symbol = (
 
     else "triangle-down"
 )
+
 
 # =========================
 # BUY SELL LABEL
