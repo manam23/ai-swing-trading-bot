@@ -216,7 +216,7 @@ def optimize_strategy(
 
     long_ema_values = [30, 50, 100]
 
-    rsi_values = [25, 30, 35]
+    rsi_values = [40, 50, 60]
 
 
     # =========================
