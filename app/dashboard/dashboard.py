@@ -368,7 +368,7 @@ else:
 
     latest_date = chart_data.index[-1]
 
-        signal_color = (
+    signal_color = (
 
         "lime"
 
