@@ -1,21 +1,51 @@
-def calculate_volume_strength(df):
+def calculate_volume_strength(data):
 
-    latest = df.iloc[-1]
+    latest = data.iloc[-1]
 
     current_volume = latest["Volume"]
 
-    avg_volume = df["Volume"].tail(20).mean()
+    avg_volume = data["Volume"].tail(20).mean()
 
-    volume_ratio = current_volume / avg_volume
+
+    # HANDLE SERIES VALUES
+
+    if hasattr(current_volume, "iloc"):
+
+        current_volume = current_volume.iloc[0]
+
+    if hasattr(avg_volume, "iloc"):
+
+        avg_volume = avg_volume.iloc[0]
+
+
+    current_volume = float(current_volume)
+
+    avg_volume = float(avg_volume)
+
+
+    if avg_volume == 0:
+
+        volume_ratio = 0
+
+    else:
+
+        volume_ratio = round(
+            current_volume / avg_volume,
+            2
+        )
+
+
+    volume_breakout = False
+
 
     if volume_ratio >= 1.5:
 
-        return {
-            "volume_breakout": True,
-            "volume_ratio": round(volume_ratio, 2)
-        }
+        volume_breakout = True
+
 
     return {
-        "volume_breakout": False,
-        "volume_ratio": round(volume_ratio, 2)
+
+        "volume_ratio": volume_ratio,
+
+        "volume_breakout": volume_breakout
     }

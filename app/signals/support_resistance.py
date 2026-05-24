@@ -1,16 +1,32 @@
-def calculate_support_resistance(df):
+def calculate_support_resistance(data):
 
-    support = round(
-        df["Low"].tail(20).min(),
-        2
-    )
+    recent_data = data.tail(20)
 
-    resistance = round(
-        df["High"].tail(20).max(),
-        2
-    )
+
+    support = recent_data["Low"].min()
+
+    resistance = recent_data["High"].max()
+
+
+    # HANDLE SERIES VALUES
+
+    if hasattr(support, "iloc"):
+
+        support = support.iloc[0]
+
+    if hasattr(resistance, "iloc"):
+
+        resistance = resistance.iloc[0]
+
+
+    support = round(float(support), 2)
+
+    resistance = round(float(resistance), 2)
+
 
     return {
+
         "support": support,
+
         "resistance": resistance
     }

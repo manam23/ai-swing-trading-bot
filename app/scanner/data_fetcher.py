@@ -26,22 +26,40 @@ def fetch_stock_data(
     period="3mo"
 ):
 
-    stock = yf.Ticker(symbol)
+    try:
 
-    df = stock.history(
+        print(f"\nFetching data for {symbol}...")
 
-        interval=interval,
+        df = yf.download(
 
-        period=period
-    )
+            tickers=symbol,
 
-    if df.empty:
+            interval=interval,
 
-        print(f"\nNo data found for {symbol}")
+            period=period,
+
+            progress=False,
+
+            threads=False,
+
+            timeout=15
+        )
+
+        if df.empty:
+
+            print(f"\nNo data found for {symbol}")
+
+            return None
+
+        df.dropna(inplace=True)
+
+        return df
+
+    except Exception as e:
+
+        print(f"\nError fetching data for {symbol}: {e}")
 
         return None
-
-    return df
 
 
 if __name__ == "__main__":

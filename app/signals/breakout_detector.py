@@ -1,20 +1,50 @@
 def detect_breakout(
-    df,
+
+    data,
+
     support,
+
     resistance,
+
     volume_breakout
 ):
 
-    latest = df.iloc[-1]
+    latest = data.iloc[-1]
 
     close_price = latest["Close"]
+
+
+    # HANDLE SERIES VALUES
+
+    if hasattr(close_price, "iloc"):
+
+        close_price = close_price.iloc[0]
+
+    if hasattr(support, "iloc"):
+
+        support = support.iloc[0]
+
+    if hasattr(resistance, "iloc"):
+
+        resistance = resistance.iloc[0]
+
+
+    close_price = float(close_price)
+
+    support = float(support)
+
+    resistance = float(resistance)
 
 
     # BULLISH BREAKOUT
 
     if (
+
         close_price > resistance
-        and volume_breakout
+
+        and
+
+        volume_breakout
     ):
 
         return "BULLISH BREAKOUT"
@@ -22,12 +52,18 @@ def detect_breakout(
 
     # BEARISH BREAKDOWN
 
-    if (
+    elif (
+
         close_price < support
-        and volume_breakout
+
+        and
+
+        volume_breakout
     ):
 
         return "BEARISH BREAKDOWN"
 
 
-    return "NO BREAKOUT"
+    else:
+
+        return "NO BREAKOUT"

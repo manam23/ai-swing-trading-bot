@@ -1,88 +1,103 @@
-def detect_candlestick_pattern(df):
+def detect_candlestick_pattern(data):
 
-    latest = df.iloc[-1]
-
-    previous = df.iloc[-2]
+    latest = data.iloc[-1]
 
 
-    latest_open = latest["Open"]
+    open_price = latest["Open"]
 
-    latest_close = latest["Close"]
+    high_price = latest["High"]
 
-    latest_high = latest["High"]
+    low_price = latest["Low"]
 
-    latest_low = latest["Low"]
-
-
-    previous_open = previous["Open"]
-
-    previous_close = previous["Close"]
+    close_price = latest["Close"]
 
 
-    body = abs(latest_close - latest_open)
+    # HANDLE SERIES VALUES
 
-    candle_range = latest_high - latest_low
+    if hasattr(open_price, "iloc"):
 
-    lower_wick = min(
-        latest_open,
-        latest_close
-    ) - latest_low
+        open_price = open_price.iloc[0]
 
-    upper_wick = latest_high - max(
-        latest_open,
-        latest_close
+    if hasattr(high_price, "iloc"):
+
+        high_price = high_price.iloc[0]
+
+    if hasattr(low_price, "iloc"):
+
+        low_price = low_price.iloc[0]
+
+    if hasattr(close_price, "iloc"):
+
+        close_price = close_price.iloc[0]
+
+
+    open_price = float(open_price)
+
+    high_price = float(high_price)
+
+    low_price = float(low_price)
+
+    close_price = float(close_price)
+
+
+    body = abs(close_price - open_price)
+
+    candle_range = high_price - low_price
+
+
+    upper_wick = high_price - max(
+        open_price,
+        close_price
     )
 
-
-    # BULLISH ENGULFING
-
-    if (
-        previous_close < previous_open
-        and latest_close > latest_open
-        and latest_open < previous_close
-        and latest_close > previous_open
-    ):
-
-        return "Bullish Engulfing"
-
-
-    # BEARISH ENGULFING
-
-    if (
-        previous_close > previous_open
-        and latest_close < latest_open
-        and latest_open > previous_close
-        and latest_close < previous_open
-    ):
-
-        return "Bearish Engulfing"
+    lower_wick = min(
+        open_price,
+        close_price
+    ) - low_price
 
 
     # HAMMER
 
     if (
-        lower_wick > (2 * body)
-        and upper_wick < body
+
+        lower_wick > body * 2
+
+        and
+
+        upper_wick < body
     ):
 
-        return "Hammer"
+        return "HAMMER"
 
 
     # SHOOTING STAR
 
-    if (
-        upper_wick > (2 * body)
-        and lower_wick < body
+    elif (
+
+        upper_wick > body * 2
+
+        and
+
+        lower_wick < body
     ):
 
-        return "Shooting Star"
+        return "SHOOTING_STAR"
 
 
-    # DOJI
+    # BULLISH CANDLE
 
-    if body < (0.1 * candle_range):
+    elif close_price > open_price:
 
-        return "Doji"
+        return "BULLISH"
 
 
-    return "No Pattern"
+    # BEARISH CANDLE
+
+    elif close_price < open_price:
+
+        return "BEARISH"
+
+
+    else:
+
+        return "NEUTRAL"

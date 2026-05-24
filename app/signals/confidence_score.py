@@ -1,16 +1,18 @@
 def calculate_confidence_score(
-    df,
+
+    data,
+
     trend,
+
     signal,
+
     volume_breakout,
+
     candlestick_pattern
 ):
 
-    latest = df.iloc[-1]
+    latest = data.iloc[-1]
 
-    score = 0
-
-    rsi = latest["RSI"]
 
     ema20 = latest["EMA_20"]
 
@@ -18,85 +20,123 @@ def calculate_confidence_score(
 
     ema200 = latest["EMA_200"]
 
-    close = latest["Close"]
+    rsi = latest["RSI"]
 
 
-    # TREND STRENGTH
+    # HANDLE SERIES VALUES
 
-    if trend == "BULLISH":
+    if hasattr(ema20, "iloc"):
 
-        score += 30
+        ema20 = ema20.iloc[0]
 
-    elif trend == "BEARISH":
+    if hasattr(ema50, "iloc"):
 
-        score += 30
+        ema50 = ema50.iloc[0]
+
+    if hasattr(ema200, "iloc"):
+
+        ema200 = ema200.iloc[0]
+
+    if hasattr(rsi, "iloc"):
+
+        rsi = rsi.iloc[0]
+
+
+    ema20 = float(ema20)
+
+    ema50 = float(ema50)
+
+    ema200 = float(ema200)
+
+    rsi = float(rsi)
+
+
+    confidence = 50
 
 
     # EMA ALIGNMENT
 
     if ema20 > ema50 > ema200:
 
-        score += 20
+        confidence += 15
 
     elif ema20 < ema50 < ema200:
 
-        score += 20
+        confidence += 15
 
 
-    # RSI QUALITY
+    # RSI STRENGTH
 
     if signal == "BUY":
 
-        if 55 <= rsi <= 70:
+        if rsi > 60:
 
-            score += 15
+            confidence += 10
 
     elif signal == "SELL":
 
-        if 30 <= rsi <= 45:
+        if rsi < 40:
 
-            score += 15
-
-
-    # PRICE POSITION
-
-    if signal == "BUY" and close > ema20:
-
-        score += 15
-
-    elif signal == "SELL" and close < ema20:
-
-        score += 15
+            confidence += 10
 
 
-    # VOLUME CONFIRMATION
+    # VOLUME BREAKOUT
 
     if volume_breakout:
 
-        score += 10
+        confidence += 15
 
 
-    # CANDLESTICK CONFIRMATION
+    # CANDLESTICK PATTERN
 
-    if candlestick_pattern in [
-        "Bullish Engulfing",
-        "Bearish Engulfing"
-    ]:
+    bullish_patterns = [
 
-        score += 10
+        "HAMMER",
 
+        "BULLISH"
+    ]
 
-    elif candlestick_pattern in [
-        "Hammer",
-        "Shooting Star"
-    ]:
+    bearish_patterns = [
 
-        score += 8
+        "SHOOTING_STAR",
 
-
-    elif candlestick_pattern == "Doji":
-
-        score += 3
+        "BEARISH"
+    ]
 
 
-    return min(score, 100)
+    if (
+
+        signal == "BUY"
+
+        and
+
+        candlestick_pattern in bullish_patterns
+    ):
+
+        confidence += 10
+
+
+    if (
+
+        signal == "SELL"
+
+        and
+
+        candlestick_pattern in bearish_patterns
+    ):
+
+        confidence += 10
+
+
+    # TREND BONUS
+
+    if trend == "BULLISH":
+
+        confidence += 10
+
+    elif trend == "BEARISH":
+
+        confidence += 10
+
+
+    return min(confidence, 100)

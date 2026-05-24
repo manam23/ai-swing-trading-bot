@@ -38,7 +38,6 @@ from app.database.db_manager import (
     save_trade_signal
 )
 
-from app.config.settings import NIFTY50_STOCKS
 from app.utils.signal_memory import signal_cache
 
 
@@ -70,43 +69,28 @@ def scan_stock(symbol, nifty_trend):
 
     if signal == "NO SIGNAL":
 
-        return
-
-    # MULTI-TIMEFRAME FILTER
-
-    if signal == "BUY":
-
-        if higher_timeframe_trend != "BULLISH":
-
-            print(
-                f"{symbol} skipped due to bearish daily trend"
-            )
-
-            return
-
-    if signal == "SELL":
-
-        if higher_timeframe_trend != "BEARISH":
-
-            print(
-                f"{symbol} skipped due to bullish daily trend"
-            )
-
-            return
-
-    # NIFTY MARKET FILTER
-
-    if signal == "BUY" and nifty_trend != "BULLISH":
-
-        print(f"{symbol} skipped due to bearish market")
+        print(f"{symbol} → NO SIGNAL")
 
         return
 
-    if signal == "SELL" and nifty_trend != "BEARISH":
 
-        print(f"{symbol} skipped due to bullish market")
+    # =========================
+    # MARKET FILTER DISABLED
+    # FOR TESTING PURPOSE
+    # =========================
 
-        return
+    # if signal == "BUY" and nifty_trend != "BULLISH":
+    #
+    #     print(f"{symbol} skipped due to bearish market")
+    #
+    #     return
+
+    # if signal == "SELL" and nifty_trend != "BEARISH":
+    #
+    #     print(f"{symbol} skipped due to bullish market")
+    #
+    #     return
+
 
     trade_levels = calculate_trade_levels(data, signal)
 
@@ -147,12 +131,6 @@ def scan_stock(symbol, nifty_trend):
         confidence
     )
 
-    if confidence < 70:
-
-        print(f"{symbol} skipped due to low confidence")
-
-        return
-
     previous_signal = signal_cache.get(symbol)
 
     if previous_signal == signal:
@@ -165,13 +143,42 @@ def scan_stock(symbol, nifty_trend):
 
     latest = data.iloc[-1]
 
-    rsi_value = round(latest["RSI"], 2)
+    rsi_value = latest["RSI"]
 
-    ema20 = round(latest["EMA_20"], 2)
+    ema20 = latest["EMA_20"]
 
-    ema50 = round(latest["EMA_50"], 2)
+    ema50 = latest["EMA_50"]
 
-    atr_value = round(latest["ATR"], 2)
+    atr_value = latest["ATR"]
+
+
+    # HANDLE SERIES VALUES
+
+    if hasattr(rsi_value, "iloc"):
+
+        rsi_value = rsi_value.iloc[0]
+
+    if hasattr(ema20, "iloc"):
+
+        ema20 = ema20.iloc[0]
+
+    if hasattr(ema50, "iloc"):
+
+        ema50 = ema50.iloc[0]
+
+    if hasattr(atr_value, "iloc"):
+
+        atr_value = atr_value.iloc[0]
+
+
+    rsi_value = round(float(rsi_value), 2)
+
+    ema20 = round(float(ema20), 2)
+
+    ema50 = round(float(ema50), 2)
+
+    atr_value = round(float(atr_value), 2)
+
 
     entry_price = trade_levels["entry"]
 
@@ -179,20 +186,15 @@ def scan_stock(symbol, nifty_trend):
 
     target_price = trade_levels["target"]
 
+
     print(
         f"{symbol} → {signal} | "
-        f"Quality: {trade_quality} | "
-        f"Breakout: {breakout_signal} | "
-        f"Daily Trend: {higher_timeframe_trend} | "
-        f"Support: {support} | "
-        f"Resistance: {resistance} | "
-        f"ATR: {atr_value} | "
-        f"Pattern: {candlestick_pattern} | "
-        f"Volume Breakout: {volume_breakout} | "
-        f"Volume Ratio: {volume_ratio}"
+        f"Confidence: {confidence}% | "
+        f"Trend: {trend}"
     )
 
-    message = f"""
+
+    message = f'''
 🚨 SWING TRADE ALERT 🚨
 
 Stock: {symbol}
@@ -234,11 +236,21 @@ RSI: {rsi_value}
 EMA20: {ema20}
 
 EMA50: {ema50}
-"""
+'''
 
     print(message)
 
-    send_telegram_alert(message)
+
+    # TELEGRAM ALERT
+
+    try:
+
+        send_telegram_alert(message)
+
+    except Exception as e:
+
+        print(f"Telegram Error: {e}")
+
 
     # SAVE SIGNAL TO DATABASE
 
@@ -273,6 +285,8 @@ EMA50: {ema50}
         rsi=rsi_value
     )
 
+    print(f"{symbol} signal saved successfully")
+
 
 def run_market_scanner():
 
@@ -284,14 +298,38 @@ def run_market_scanner():
     print("Running Market Scanner...")
     print("==============================")
 
-    for stock in NIFTY50_STOCKS:
+    stocks = [
 
-        scan_stock(stock, nifty_trend)
+        "RELIANCE.NS",
+
+        "TCS.NS"
+    ]
+
+
+    for stock in stocks:
+
+        try:
+
+            scan_stock(stock, nifty_trend)
+
+        except Exception as e:
+
+            import traceback
+
+            print("\n==============================")
+            print(f"ERROR SCANNING {stock}")
+            print("==============================")
+
+            traceback.print_exc()
+
+            print("\n")
 
 
 if __name__ == "__main__":
 
-    schedule.every(15).minutes.do(run_market_scanner)
+    schedule.every(15).minutes.do(
+        run_market_scanner
+    )
 
     print("\n🚀 AI Swing Trading Bot Started...\n")
 
