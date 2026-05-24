@@ -56,25 +56,32 @@ st.title("🚀 AI Swing Trading Dashboard")
 def load_trade_history():
 
     if not os.path.exists(DB_NAME):
+
+        st.warning("Database file not found.")
+
         return pd.DataFrame()
 
-    conn = sqlite3.connect(DB_NAME)
-
-    query = """
-    SELECT *
-    FROM trade_signals
-    ORDER BY timestamp DESC
-    """
-
     try:
+
+        conn = sqlite3.connect(DB_NAME)
+
+        query = """
+        SELECT *
+        FROM trade_signals
+        ORDER BY id DESC
+        """
+
         df = pd.read_sql_query(query, conn)
 
-    except Exception:
-        df = pd.DataFrame()
+        conn.close()
 
-    conn.close()
+        return df
 
-    return df
+    except Exception as e:
+
+        st.error(f"Database Error: {e}")
+
+        return pd.DataFrame()
 
 
 df = load_trade_history()
