@@ -314,10 +314,10 @@ if len(stock_rows) > 0:
 
     latest_trade = stock_rows.iloc[0]
 
-    support = float(latest_trade["support"].iloc[0]) if hasattr(latest_trade["support"], "iloc") else float(latest_trade["support"])
+    support = float(latest_trade["support"])
 
-    resistance = float(latest_trade["resistance"].iloc[0]) if hasattr(latest_trade["resistance"], "iloc") else float(latest_trade["resistance"])
-
+    resistance = float(latest_trade["resistance"])
+    
     signal = latest_trade["signal"]
 
     trade_status = latest_trade["trade_status"]
@@ -436,7 +436,7 @@ fig.add_annotation(
 # LATEST PRICE
 # =========================
 
-latest_close = chart_data["Close"].iloc[-1]
+latest_close = float(chart_data["Close"].iloc[-1])
 
 latest_date = chart_data.index[-1]
 
@@ -445,29 +445,29 @@ latest_date = chart_data.index[-1]
 # TRADE TARGETS
 # =========================
 
-entry_price = latest_close
+entry_price = float(latest_close)
 
 risk = abs(entry_price - support)
 
 if signal == "BUY":
 
-    stop_loss = support
+    stop_loss = float(support)
 
-    target1 = entry_price + (risk * 1)
+    target1 = float(entry_price + (risk * 1))
 
-    target2 = entry_price + (risk * 2)
+    target2 = float(entry_price + (risk * 2))
 
-    target3 = entry_price + (risk * 3)
+    target3 = float(entry_price + (risk * 3))
 
 else:
 
-    stop_loss = resistance
+    stop_loss = float(resistance)
 
-    target1 = entry_price - (risk * 1)
+    target1 = float(entry_price - (risk * 1))
 
-    target2 = entry_price - (risk * 2)
+    target2 = float(entry_price - (risk * 2))
 
-    target3 = entry_price - (risk * 3)
+    target3 = float(entry_price - (risk * 3))
 
 
 # =========================
