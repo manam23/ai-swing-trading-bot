@@ -314,15 +314,15 @@ if len(stock_rows) > 0:
 
     latest_trade = stock_rows.iloc[0]
 
-    support = float(latest_trade["support"])
+    support = float(latest_trade["support"].iloc[0]) if hasattr(latest_trade["support"], "iloc") else float(latest_trade["support"])
 
-    resistance = float(latest_trade["resistance"])
+    resistance = float(latest_trade["resistance"].iloc[0]) if hasattr(latest_trade["resistance"], "iloc") else float(latest_trade["resistance"])
 
     signal = latest_trade["signal"]
 
     trade_status = latest_trade["trade_status"]
 
-    pnl = latest_trade["pnl"]
+    pnl = float(latest_trade["pnl"])
 
 else:
 
