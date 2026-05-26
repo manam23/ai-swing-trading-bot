@@ -446,8 +446,21 @@ fig.add_annotation(
 # LATEST PRICE
 # =========================
 
+# =========================
+# LATEST PRICE
+# =========================
+
+close_data = chart_data["Close"]
+
+# Fix yfinance dataframe issue
+if isinstance(close_data, pd.DataFrame):
+
+    close_data = close_data.iloc[:, 0]
+
+close_data = close_data.dropna()
+
 latest_close = float(
-    chart_data["Close"].dropna().iloc[-1]
+    close_data.iloc[-1]
 )
 
 latest_date = chart_data.index[-1]
