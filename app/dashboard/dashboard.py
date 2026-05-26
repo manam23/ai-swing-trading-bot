@@ -447,10 +447,7 @@ fig.add_annotation(
 # =========================
 
 latest_close = float(
-    pd.to_numeric(
-        chart_data["Close"],
-        errors="coerce"
-    ).dropna().iloc[-1]
+    chart_data["Close"].dropna().iloc[-1]
 )
 
 latest_date = chart_data.index[-1]
