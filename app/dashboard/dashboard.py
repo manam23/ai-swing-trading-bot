@@ -442,6 +442,35 @@ latest_date = chart_data.index[-1]
 
 
 # =========================
+# TRADE TARGETS
+# =========================
+
+entry_price = latest_close
+
+risk = abs(entry_price - support)
+
+if signal == "BUY":
+
+    stop_loss = support
+
+    target1 = entry_price + (risk * 1)
+
+    target2 = entry_price + (risk * 2)
+
+    target3 = entry_price + (risk * 3)
+
+else:
+
+    stop_loss = resistance
+
+    target1 = entry_price - (risk * 1)
+
+    target2 = entry_price - (risk * 2)
+
+    target3 = entry_price - (risk * 3)
+
+
+# =========================
 # SIGNAL COLORS
 # =========================
 
@@ -461,6 +490,142 @@ signal_symbol = (
     if signal == "BUY"
 
     else "triangle-down"
+)
+
+
+# =========================
+# PROFIT ZONE
+# =========================
+
+profit_top = max(target3, entry_price)
+
+profit_bottom = min(target3, entry_price)
+
+fig.add_shape(
+
+    type="rect",
+
+    x0=chart_data.index[-15],
+
+    x1=chart_data.index[-1],
+
+    y0=profit_bottom,
+
+    y1=profit_top,
+
+    fillcolor="green",
+
+    opacity=0.18,
+
+    line_width=0
+)
+
+
+# =========================
+# RISK ZONE
+# =========================
+
+risk_top = max(stop_loss, entry_price)
+
+risk_bottom = min(stop_loss, entry_price)
+
+fig.add_shape(
+
+    type="rect",
+
+    x0=chart_data.index[-15],
+
+    x1=chart_data.index[-1],
+
+    y0=risk_bottom,
+
+    y1=risk_top,
+
+    fillcolor="red",
+
+    opacity=0.18,
+
+    line_width=0
+)
+
+
+# =========================
+# TARGET LINES
+# =========================
+
+target_color = "lime"
+
+for label, value in [
+
+    ("TP1", target1),
+
+    ("TP2", target2),
+
+    ("TP3", target3)
+
+]:
+
+    fig.add_shape(
+
+        type="line",
+
+        x0=chart_data.index[0],
+
+        x1=chart_data.index[-1],
+
+        y0=value,
+
+        y1=value,
+
+        line=dict(
+
+            color=target_color,
+
+            width=2,
+
+            dash="dot"
+        )
+    )
+
+    fig.add_annotation(
+
+        x=chart_data.index[-1],
+
+        y=value,
+
+        text=f"{label} ₹{round(value,2)}",
+
+        showarrow=False,
+
+        font=dict(
+
+            color=target_color,
+
+            size=13
+        )
+    )
+
+
+# =========================
+# STOP LOSS LABEL
+# =========================
+
+fig.add_annotation(
+
+    x=chart_data.index[-1],
+
+    y=stop_loss,
+
+    text=f"SL ₹{round(stop_loss,2)}",
+
+    showarrow=False,
+
+    font=dict(
+
+        color="red",
+
+        size=13
+    )
 )
 
 
@@ -469,55 +634,33 @@ signal_symbol = (
 # =========================
 
 fig.add_annotation(
+
     x=latest_date,
+
     y=latest_close,
+
     text=f"🟢 BUY" if signal == "BUY" else "🔴 SELL",
+
     showarrow=True,
+
     arrowhead=2,
+
     arrowsize=1,
+
     arrowwidth=2,
+
     arrowcolor=signal_color,
+
     ax=40,
+
     ay=-40,
+
     font=dict(
+
         color=signal_color,
+
         size=16
     )
-)
-# =========================
-# SIGNAL COLORS
-# =========================
-
-signal_color = (
-
-    "lime"
-
-    if signal == "BUY"
-
-    else "red"
-)
-
-
-signal_symbol = (
-
-    "triangle-up"
-
-    if signal == "BUY"
-
-    else "triangle-down"
-)
-
-
-# =========================
-# ENTRY LABEL
-# =========================
-
-entry_label = (
-
-    f"{signal}<br>"
-    f"Entry: ₹{round(latest_close,2)}<br>"
-    f"Support: ₹{round(support,2)}<br>"
-    f"Resistance: ₹{round(resistance,2)}"
 )
 
 
@@ -533,7 +676,7 @@ fig.add_trace(
 
         y=[latest_close],
 
-        mode="markers+text",
+        mode="markers",
 
         marker=dict(
 
@@ -549,48 +692,55 @@ fig.add_trace(
             )
         ),
 
-        text=[entry_label],
-
-        textposition="top center",
-
-        textfont=dict(
-            size=14
-        ),
-
         name=f"{signal} Signal"
     )
 )
 
 
 # =========================
-# ENTRY PRICE LINE
-# =========================
-
-# =========================
-# ENTRY PRICE LINE
+# ENTRY LINE
 # =========================
 
 fig.add_shape(
+
     type="line",
+
     x0=chart_data.index[0],
+
     x1=chart_data.index[-1],
-    y0=latest_close,
-    y1=latest_close,
+
+    y0=entry_price,
+
+    y1=entry_price,
+
     line=dict(
+
         color=signal_color,
-        width=2,
+
+        width=3,
+
         dash="dash"
     )
 )
 
-fig.add_annotation(
-    x=chart_data.index[-1],
-    y=latest_close,
-    text=f"{signal} ENTRY ₹{round(latest_close,2)}",
-    showarrow=False,
-    font=dict(color=signal_color, size=14)
-)
 
+fig.add_annotation(
+
+    x=chart_data.index[-1],
+
+    y=entry_price,
+
+    text=f"ENTRY ₹{round(entry_price,2)}",
+
+    showarrow=False,
+
+    font=dict(
+
+        color=signal_color,
+
+        size=13
+    )
+)
 fig.update_layout(
 
     title=(
