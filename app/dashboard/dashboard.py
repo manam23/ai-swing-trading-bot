@@ -314,10 +314,20 @@ if len(stock_rows) > 0:
 
     latest_trade = stock_rows.iloc[0]
 
-    support = float(latest_trade["support"])
+    support = float(
+        pd.to_numeric(
+            [latest_trade["support"]],
+            errors="coerce"
+        )[0]
+    )
 
-    resistance = float(latest_trade["resistance"])
-    
+    resistance = float(
+        pd.to_numeric(
+            [latest_trade["resistance"]],
+            errors="coerce"
+        )[0]
+    )
+
     signal = latest_trade["signal"]
 
     trade_status = latest_trade["trade_status"]
@@ -436,7 +446,12 @@ fig.add_annotation(
 # LATEST PRICE
 # =========================
 
-latest_close = float(chart_data["Close"].iloc[-1])
+latest_close = float(
+    pd.to_numeric(
+        chart_data["Close"],
+        errors="coerce"
+    ).dropna().iloc[-1]
+)
 
 latest_date = chart_data.index[-1]
 
