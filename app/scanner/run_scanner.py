@@ -1,6 +1,11 @@
 import schedule
 import time
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from app.scanner.data_fetcher import fetch_stock_data
 from app.scanner.data_fetcher import fetch_stock_data
 
 from app.indicators.ema_indicator import calculate_ema
