@@ -462,18 +462,13 @@ def run_market_scanner():
 
 if __name__ == "__main__":
 
-    schedule.every(15).minutes.do(
-        run_market_scanner
-    )
-
     print(
-        "\n🚀 AI Swing Trading Bot Started...\n"
+        "\n🚀 AI Swing Trading Scanner Started...\n"
     )
 
+    # RUN ONLY ONCE
     run_market_scanner()
 
-    while True:
-
-        schedule.run_pending()
-
-        time.sleep(1)
+    print(
+        "\n✅ Scanner Completed Successfully\n"
+    )
