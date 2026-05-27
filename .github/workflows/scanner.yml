@@ -1,20 +1,26 @@
+
 name: AI Swing Trading Scanner
 
 on:
   schedule:
-    # Every 15 minutes
     - cron: "*/15 * * * *"
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   run-scanner:
+
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup Python
         uses: actions/setup-python@v5
