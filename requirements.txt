@@ -5,4 +5,5 @@ yfinance
 plotly
 schedule
 streamlit-autorefresh
-plotly
+python-dotenv
+python-telegram-bot
