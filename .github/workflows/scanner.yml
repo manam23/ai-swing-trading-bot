@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Scanner
         run: |
-          python run_scanner.py
+          python app/scanner/run_scanner.py
 
       - name: Commit Updated Database
         run: |
