@@ -216,27 +216,58 @@ status_filter = st.selectbox(
     ["ALL", "OPEN", "WIN", "LOSS"]
 )
 
+confidence_filter = st.selectbox(
+    "Filter By Confidence",
+    ["ALL", "VERY HIGH", "HIGH", "MEDIUM"]
+)
+
+date_filter = st.selectbox(
+    "Filter By Date",
+    ["ALL", "TODAY", "LAST 7 DAYS"]
+)
 
 filtered_df = df.copy()
 
-
 if signal_filter != "ALL":
-
     filtered_df = filtered_df[
         filtered_df["signal"] == signal_filter
     ]
 
-
 if status_filter != "ALL":
-
     filtered_df = filtered_df[
         filtered_df["trade_status"] == status_filter
     ]
 
+if confidence_filter != "ALL":
+    filtered_df = filtered_df[
+        filtered_df["trade_quality"] == confidence_filter
+    ]
 
-# =========================
-# TABLE
-# =========================
+filtered_df["timestamp"] = pd.to_datetime(
+    filtered_df["timestamp"]
+)
+
+if date_filter == "TODAY":
+    today = pd.Timestamp.now().date()
+
+    filtered_df = filtered_df[
+        filtered_df["timestamp"].dt.date == today
+    ]
+
+elif date_filter == "LAST 7 DAYS":
+    last_7_days = (
+        pd.Timestamp.now()
+        - pd.Timedelta(days=7)
+    )
+
+    filtered_df = filtered_df[
+        filtered_df["timestamp"] >= last_7_days
+    ]
+
+filtered_df = filtered_df.sort_values(
+    by="timestamp",
+    ascending=False
+)
 
 st.subheader("📊 Trade Signal History")
 
