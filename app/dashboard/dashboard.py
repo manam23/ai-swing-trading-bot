@@ -205,7 +205,15 @@ st.divider()
 # =========================
 # FILTERS
 # =========================
+confidence_filter = st.selectbox(
+    "Filter By Confidence",
+    ["ALL", "VERY HIGH", "HIGH", "MEDIUM"]
+)
 
+date_filter = st.selectbox(
+    "Filter By Date",
+    ["TODAY", "LAST 7 DAYS", "LAST 30 DAYS", "ALL"]
+)
 signal_filter = st.selectbox(
     "Filter By Signal",
     ["ALL", "BUY", "SELL"]
@@ -214,16 +222,6 @@ signal_filter = st.selectbox(
 status_filter = st.selectbox(
     "Filter By Trade Status",
     ["ALL", "OPEN", "WIN", "LOSS"]
-)
-
-confidence_filter = st.selectbox(
-    "Filter By Confidence",
-    ["ALL", "VERY HIGH", "HIGH", "MEDIUM"]
-)
-
-date_filter = st.selectbox(
-    "Filter By Date",
-    ["ALL", "TODAY", "LAST 7 DAYS"]
 )
 
 filtered_df = df.copy()
@@ -243,29 +241,27 @@ if confidence_filter != "ALL":
         filtered_df["trade_quality"] == confidence_filter
     ]
 
-filtered_df["timestamp"] = pd.to_datetime(
-    filtered_df["timestamp"]
-)
+filtered_df["timestamp"] = pd.to_datetime(filtered_df["timestamp"])
+
+today = pd.Timestamp.today().normalize()
 
 if date_filter == "TODAY":
-    today = pd.Timestamp.now().date()
-
     filtered_df = filtered_df[
-        filtered_df["timestamp"].dt.date == today
+        filtered_df["timestamp"] >= today
     ]
 
 elif date_filter == "LAST 7 DAYS":
-    last_7_days = (
-        pd.Timestamp.now()
-        - pd.Timedelta(days=7)
-    )
-
     filtered_df = filtered_df[
-        filtered_df["timestamp"] >= last_7_days
+        filtered_df["timestamp"] >= today - pd.Timedelta(days=7)
+    ]
+
+elif date_filter == "LAST 30 DAYS":
+    filtered_df = filtered_df[
+        filtered_df["timestamp"] >= today - pd.Timedelta(days=30)
     ]
 
 filtered_df = filtered_df.sort_values(
-    by="timestamp",
+    "timestamp",
     ascending=False
 )
 
